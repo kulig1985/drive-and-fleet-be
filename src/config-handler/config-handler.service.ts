@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import fs from 'fs';
+import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -9,7 +9,6 @@ export class ConfigHandlerService {
 
   constructor(private configService: ConfigService) {
     const configPath = this.configService.get('CONFIG_PATH');
-    this.logger.log('configPath', configPath);
     let configFile: string;
 
     try {
