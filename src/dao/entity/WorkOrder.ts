@@ -23,6 +23,14 @@ export class WorkOrder {
   plateNr: string | null;
 
   @AutoMap()
+  @Column('varchar', { name: 'car_type', nullable: true, length: 100 })
+  carType: string | null;
+
+  @AutoMap()
+  @Column('varchar', { name: 'car_user_name', nullable: true, length: 200 })
+  carUserName: string | null;
+
+  @AutoMap()
   @Column('int', { name: 'ride_cnt', nullable: true })
   rideCnt: number | null;
 

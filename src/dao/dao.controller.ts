@@ -33,4 +33,9 @@ export class DaoController {
   async findRideById(@Query('rideId') rideId: number): Promise<RideDTO> {
     return await this.daoService.findRideById(rideId);
   }
+
+  @Get('findAllRide')
+  async findAllRide(): Promise<RideDTO[]> {
+    return await this.daoService.findAllRide();
+  }
 }

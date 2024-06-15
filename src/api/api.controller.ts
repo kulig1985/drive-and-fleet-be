@@ -43,7 +43,7 @@ export class ApiController {
     @Request() req: any,
   ): Promise<WorkOrder> {
     const driverName = req.user.driverName;
-    this.logger.log('handleUpload invoked by driverName: ' + driverName);
+    this.logger.log('saveNewWorkOrder invoked by driverName: ' + driverName);
     return await this.apiService.saveNewWorkOrder(workOrderDTO, driverName);
   }
 
@@ -53,7 +53,7 @@ export class ApiController {
     @Request() req: any,
   ) {
     const driverName = req.user.driverName;
-    this.logger.log('handleUpload invoked by driverName: ' + driverName);
+    this.logger.log('modifyWorkOrder invoked by driverName: ' + driverName);
     return await this.apiService.modifyWorkOrder(workOrderDTO, driverName);
   }
 

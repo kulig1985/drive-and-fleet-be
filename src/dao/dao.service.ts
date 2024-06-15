@@ -24,7 +24,7 @@ import {
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Between } from 'typeorm';
-import { startOfDay, endOfDay } from 'date-fns';
+import { startOfDay, endOfDay, subDays } from 'date-fns';
 
 @Injectable()
 export class DaoService {
@@ -93,7 +93,11 @@ export class DaoService {
   }
 
   async findWorkOrderById(orderId: number): Promise<WorkOrder> {
-    return this.workOrderRepository.findOneBy({ orderId: orderId });
+    return this.workOrderRepository
+      .createQueryBuilder('workOrder')
+      .leftJoinAndSelect('workOrder.rides', 'rides')
+      .where('workOrder.orderId = :orderId', { orderId })
+      .getOne();
   }
 
   async saveFilePaths(
@@ -191,6 +195,7 @@ export class DaoService {
   }
 
   async makeRideFinished(ride: Ride, driverName: string): Promise<Ride> {
+    this.logger.log('makeRideFinished invoked.');
     ride.boolId = 2;
     ride.modDate = new Date();
     ride.modUser = driverName;
@@ -213,5 +218,18 @@ export class DaoService {
       relations: { order: true },
     });
     return this.classMapper.map(rideEntity, Ride, RideDTO);
+  }
+
+  async findAllRide(): Promise<RideDTO[]> {
+    const currentDate = new Date();
+    const sixtyDaysAgo = subDays(currentDate, 60);
+    const rideEntityList = await this.rideRepository.find({
+      where: {
+        crDate: Between(sixtyDaysAgo, currentDate),
+      },
+    });
+    return rideEntityList.map((rideEntityInstance) =>
+      this.classMapper.map(rideEntityInstance, Ride, RideDTO),
+    );
   }
 }

@@ -31,6 +31,7 @@ export class MapperProfile extends AutomapperProfile {
       createMap(mapper, WorkOrder, WorkOrderDTO);
       createMap(mapper, Partner, PartnerDTO);
       createMap(mapper, Ride, RideDTO);
+      createMap(mapper, Ride, RideDTO);
       createMap(mapper, RelRideDriver, RelRideDriverDTO);
       createMap(mapper, Driver, DriverDTO);
       createMap(mapper, WorkOrderDTO, WorkOrder);

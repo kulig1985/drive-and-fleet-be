@@ -28,7 +28,7 @@ export class ApiService {
     driverName: string,
   ): Promise<HandleUploadResultDto> {
     this.logger.log(
-      'saveFiles invoked on orderId: ' +
+      'handleUpload invoked on orderId: ' +
         uploadDto.orderId +
         ' on rideId: ' +
         uploadDto.rideId,
@@ -69,6 +69,8 @@ export class ApiService {
       ride,
       driverName,
     );
+
+    this.logger.log('ride set to finished..');
 
     const notFinishedRide = workOrder.rides.filter(
       (rideInstance) => rideInstance.boolId == 1,

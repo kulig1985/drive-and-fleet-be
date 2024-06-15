@@ -20,6 +20,10 @@ export class WorkOrderDTO {
   @AutoMap()
   plateNr: string;
   @AutoMap()
+  carType: string;
+  @AutoMap()
+  carUserName: string;
+  @AutoMap()
   rideCnt: number;
   @AutoMap()
   commentText: string;
@@ -60,15 +64,11 @@ export class RideDTO {
   @AutoMap()
   rideId: number;
   @AutoMap()
-  @IsNotEmpty()
-  carType: string;
-  @AutoMap()
-  @IsNotEmpty()
-  carUserName: string;
-  @AutoMap()
   orderId: number;
   @AutoMap()
   executeNr: number;
+  @AutoMap()
+  pickUpTime: Date;
   @AutoMap()
   @IsNotEmpty()
   startLocationZip: number;

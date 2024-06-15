@@ -21,20 +21,16 @@ export class Ride {
   rideId: number;
 
   @AutoMap()
-  @Column('varchar', { name: 'car_type', nullable: true, length: 100 })
-  carType: string | null;
-
-  @AutoMap()
-  @Column('varchar', { name: 'car_user_name', nullable: true, length: 200 })
-  carUserName: string | null;
-
-  @AutoMap()
   @Column('int', { name: 'order_id' })
   orderId: number;
 
   @AutoMap()
   @Column('int', { name: 'execute_nr', nullable: true })
   executeNr: number | null;
+
+  @AutoMap()
+  @Column('datetime', { name: 'pick_up_time', nullable: true })
+  pickUpTime: number | null;
 
   @AutoMap()
   @Column('int', { name: 'start_location_zip', nullable: true })
