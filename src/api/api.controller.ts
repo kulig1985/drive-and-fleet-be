@@ -19,6 +19,7 @@ import { WorkOrderDTO } from '../dao/dto/workorder.dto';
 import { WorkOrder } from '../dao/entity/WorkOrder';
 import { existsSync } from 'fs';
 import { Response } from 'express';
+import { DriverModificationDto } from './dto/driver-modification.dto';
 
 @Controller('api')
 @UseGuards(AuthGuard())
@@ -55,6 +56,19 @@ export class ApiController {
     const driverName = req.user.driverName;
     this.logger.log('modifyWorkOrder invoked by driverName: ' + driverName);
     return await this.apiService.modifyWorkOrder(workOrderDTO, driverName);
+  }
+
+  @Patch('modifyDriverForRide')
+  async modifyDriverForRide(
+    @Body() driverModificationDto: DriverModificationDto,
+    @Request() req: any,
+  ) {
+    const driverName = req.user.driverName;
+    this.logger.log('modifyDriverForRide invoked by driverName: ' + driverName);
+    return await this.apiService.modifyDriverForRide(
+      driverModificationDto,
+      driverName,
+    );
   }
 
   @Get('downloadPicture')

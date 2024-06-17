@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigHandlerService } from '../config-handler/config-handler.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Driver } from './entity/Driver';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Partner } from './entity/Partner';
 import { RelRideDriver } from './entity/RelRideDriver';
 import { Ride } from './entity/Ride';
@@ -53,20 +53,46 @@ export class DaoService {
   async findAllWorkOrder(): Promise<WorkOrderDTO[]> {
     const todayStart = startOfDay(new Date());
     const todayEnd = endOfDay(new Date());
-    const workOrderList = await this.workOrderRepository.find({
-      where: [
-        {
-          crDate: Between(todayStart, todayEnd),
-        },
-        {
-          boolId: 1,
-        },
-      ],
-      order: {
-        boolId: 'ASC',
-        orderId: 'ASC',
-      },
-    });
+    // const workOrderList = await this.workOrderRepository.find({
+    //   where: [
+    //     {
+    //       crDate: Between(todayStart, todayEnd),
+    //     },
+    //     {
+    //       boolId: 1,
+    //     },
+    //   ],
+    //   order: {
+    //     boolId: 'ASC',
+    //     orderId: 'ASC',
+    //   },
+    // });
+    const workOrderList = await this.workOrderRepository
+      .createQueryBuilder('workOrder')
+      .leftJoinAndSelect('workOrder.rides', 'ride')
+      .leftJoinAndSelect('workOrder.partner', 'partner')
+      .leftJoinAndSelect('ride.relRideDrivers', 'relRideDriver')
+      .leftJoinAndSelect('relRideDriver.driver', 'driver')
+      .where(
+        new Brackets((qb) => {
+          qb.where('workOrder.crDate BETWEEN :start AND :end', {
+            start: todayStart,
+            end: todayEnd,
+          }).orWhere('workOrder.boolId = :boolId', { boolId: 1 });
+        }),
+      )
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('relRideDriver.boolId IS NULL').orWhere(
+            'relRideDriver.boolId != :relBoolId',
+            { relBoolId: 0 },
+          );
+        }),
+      )
+      .orderBy('workOrder.boolId', 'ASC')
+      .addOrderBy('workOrder.orderId', 'ASC')
+      .getMany();
+
     this.logger.log('workOrderList length: ' + workOrderList.length);
     return workOrderList.map((workOrderInstance) =>
       this.classMapper.map(workOrderInstance, WorkOrder, WorkOrderDTO),

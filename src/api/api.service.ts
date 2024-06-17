@@ -13,6 +13,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { RelRideDriver } from '../dao/entity/RelRideDriver';
 import { WorkOrderDTO } from '../dao/dto/workorder.dto';
+import { DriverModificationDto } from './dto/driver-modification.dto';
 
 @Injectable()
 export class ApiService {
@@ -123,6 +124,43 @@ export class ApiService {
     );
     this.logger.log('workOrder', JSON.stringify(workOrder));
     return await this.daoService.workOrderRepository.save(workOrder);
+  }
+
+  async modifyDriverForRide(
+    driverModificationDto: DriverModificationDto,
+    driverName: string,
+  ) {
+    this.logger.log(
+      'modifyDriverForRide invoked by ',
+      driverName,
+      'driverModificationDto: ',
+      driverModificationDto,
+    );
+
+    const ride = await this.daoService.rideRepository.findOneBy({
+      rideId: driverModificationDto.rideId,
+    });
+    this.logger.log('ride found!', ride);
+
+    const newDriver = await this.daoService.driverRepository.findOneBy({
+      driverId: driverModificationDto.driverId,
+    });
+    this.logger.log('newDriver found!', ride);
+
+    for (const relRideDrives of ride.relRideDrivers) {
+      relRideDrives.boolId = 0;
+      relRideDrives.modDate = new Date();
+      relRideDrives.modUser = driverName;
+    }
+
+    this.logger.log('relRideDrives invalidate done!');
+    const newRelRide = new RelRideDriver();
+    newRelRide.rideId = ride.rideId;
+    newRelRide.driver = newDriver;
+    newRelRide.crUser = driverName;
+    ride.relRideDrivers.push(newRelRide);
+    this.logger.log('newRelRide', JSON.stringify(newRelRide));
+    return this.daoService.rideRepository.save(ride);
   }
 
   private handleCrUserOnSaveNewWorkOrder(

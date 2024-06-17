@@ -95,7 +95,7 @@ export class Ride {
   @AutoMap(() => RelRideDriver)
   @OneToMany(() => RelRideDriver, (relRideDriver) => relRideDriver.ride, {
     eager: true,
-    cascade: ['insert'],
+    cascade: ['insert', 'update'],
   })
   relRideDrivers: RelRideDriver[];
 
