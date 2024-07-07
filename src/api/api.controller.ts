@@ -1,7 +1,8 @@
 import {
   Body,
   Controller,
-  Get, HttpStatus,
+  Get,
+  HttpStatus,
   Logger,
   Patch,
   Post,
@@ -94,5 +95,28 @@ export class ApiController {
     } else {
       res.status(HttpStatus.NOT_FOUND).send('File not found');
     }
+  }
+
+  @Get('generatePdfByRideId')
+  async generatePdfByRideId(
+    @Query('rideId') rideId: number,
+    @Res() res: Response,
+  ) {
+    // const data = {
+    //   title: 'My PDF',
+    //   content: 'This is the content of my PDF',
+    //   imagePaths: [
+    //     '/Users/kuligabor/SELF_PROJECTS/Drive-and-fleet/upload/55/57_0.jpg',
+    //     '/Users/kuligabor/SELF_PROJECTS/Drive-and-fleet/upload/55/57_0.jpg',
+    //     '/Users/kuligabor/SELF_PROJECTS/Drive-and-fleet/upload/55/57_0.jpg',
+    //   ],
+    // };
+    const pdfBuffer = await this.apiService.generatePdfByRideId(rideId);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=my-pdf.pdf',
+      'Content-Length': pdfBuffer.length,
+    });
+    res.end(pdfBuffer);
   }
 }

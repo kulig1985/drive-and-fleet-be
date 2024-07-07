@@ -25,6 +25,8 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Between } from 'typeorm';
 import { startOfDay, endOfDay, subDays } from 'date-fns';
+import { ZipCity } from './entity/ZipCity';
+import { ZipCityDTO } from './dto/zip-city.dto';
 
 @Injectable()
 export class DaoService {
@@ -48,6 +50,8 @@ export class DaoService {
     readonly surveyDResultTypeRepository: Repository<SurveyDResultType>,
     @InjectRepository(RideSurveyResult, 'driveAndFleetMySql')
     readonly rideSurveyResultRepository: Repository<RideSurveyResult>,
+    @InjectRepository(ZipCity, 'driveAndFleetMySql')
+    readonly zipCityRepository: Repository<ZipCity>,
   ) {}
 
   async findAllWorkOrder(): Promise<WorkOrderDTO[]> {
@@ -253,9 +257,45 @@ export class DaoService {
       where: {
         crDate: Between(sixtyDaysAgo, currentDate),
       },
+      relations: { order: true },
     });
     return rideEntityList.map((rideEntityInstance) =>
       this.classMapper.map(rideEntityInstance, Ride, RideDTO),
+    );
+  }
+
+  async findAllRideForPrint(): Promise<WorkOrderDTO[]> {
+    const workOrderList = await this.workOrderRepository
+      .createQueryBuilder('workOrder')
+      .leftJoinAndSelect('workOrder.rides', 'ride')
+      .innerJoinAndSelect('workOrder.partner', 'partner')
+      .innerJoinAndSelect('ride.relRideDrivers', 'relRideDriver')
+      .innerJoinAndSelect('relRideDriver.driver', 'driver')
+      .innerJoinAndSelect('ride.rideSurveyResults', 'rideSurveyResult')
+      .innerJoinAndSelect('rideSurveyResult.stype', 'stype')
+      .innerJoinAndSelect('ride.files', 'files')
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('relRideDriver.boolId IS NULL').orWhere(
+            'relRideDriver.boolId != :relBoolId',
+            { relBoolId: 0 },
+          );
+        }),
+      )
+      .andWhere('workOrder.boolId = :boolId', { boolId: 2 })
+      .orderBy('workOrder.boolId', 'ASC')
+      .addOrderBy('workOrder.orderId', 'ASC')
+      .getMany();
+
+    return workOrderList.map((workOrderInstance) =>
+      this.classMapper.map(workOrderInstance, WorkOrder, WorkOrderDTO),
+    );
+  }
+
+  async findAllZipCity(): Promise<ZipCityDTO[]> {
+    const zipCityList = await this.zipCityRepository.find();
+    return zipCityList.map((zipCity) =>
+      this.classMapper.map(zipCity, ZipCity, ZipCityDTO),
     );
   }
 }

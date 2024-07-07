@@ -30,6 +30,7 @@ export class AuthService {
       AuthCredentialDto,
       Driver,
     );
+    newDriver.driverType = 'BASE';
     this.logger.log('newDriver', newDriver.driverRealName);
     return this.daoService.driverRepository.save(newDriver);
   }

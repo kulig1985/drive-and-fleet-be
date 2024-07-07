@@ -13,6 +13,7 @@ import { PassportModule } from '@nestjs/passport';
 import { WorkOrder } from './entity/WorkOrder';
 import { SurveyDResultType } from './entity/SurveyDResultType';
 import { RideSurveyResult } from './entity/RideSurveyResult';
+import { ZipCity } from './entity/ZipCity';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { RideSurveyResult } from './entity/RideSurveyResult';
           File,
           SurveyDResultType,
           RideSurveyResult,
+          ZipCity,
         ],
         //logging: ["query"],
         synchronize: false,
@@ -53,6 +55,7 @@ import { RideSurveyResult } from './entity/RideSurveyResult';
         File,
         SurveyDResultType,
         RideSurveyResult,
+        ZipCity,
       ],
       'driveAndFleetMySql',
     ),

@@ -18,6 +18,8 @@ import { RelRideDriver } from './dao/entity/RelRideDriver';
 import { RideSurveyResult } from './dao/entity/RideSurveyResult';
 import { File } from './dao/entity/File';
 import { SurveyDResultType } from './dao/entity/SurveyDResultType';
+import { ZipCity } from './dao/entity/ZipCity';
+import { ZipCityDTO } from './dao/dto/zip-city.dto';
 
 @Injectable()
 export class MapperProfile extends AutomapperProfile {
@@ -47,6 +49,7 @@ export class MapperProfile extends AutomapperProfile {
       createMap(mapper, RideSurveyResultDTO, RideSurveyResult);
       createMap(mapper, SurveyDResultType, SurveyDResultTypeDTO);
       createMap(mapper, SurveyDResultTypeDTO, SurveyDResultType);
+      createMap(mapper, ZipCity, ZipCityDTO);
     };
   }
 }

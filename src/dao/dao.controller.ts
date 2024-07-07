@@ -1,12 +1,15 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { DaoService } from './dao.service';
-import { WorkOrder } from './entity/WorkOrder';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
-import { Partner } from './entity/Partner';
-import { Driver } from './entity/Driver';
-import { DriverDTO, PartnerDTO, RideDTO, WorkOrderDTO } from './dto/workorder.dto';
-import { Ride } from './entity/Ride';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  DriverDTO,
+  PartnerDTO,
+  RideDTO,
+  WorkOrderDTO,
+} from './dto/workorder.dto';
+import { ZipCity } from './entity/ZipCity';
+import { ZipCityDTO } from './dto/zip-city.dto';
 
 @Controller('api/dao')
 @UseGuards(AuthGuard())
@@ -37,5 +40,15 @@ export class DaoController {
   @Get('findAllRide')
   async findAllRide(): Promise<RideDTO[]> {
     return await this.daoService.findAllRide();
+  }
+
+  @Get('findAllRideForPrint')
+  async findAllRideForPrint(): Promise<WorkOrderDTO[]> {
+    return await this.daoService.findAllRideForPrint();
+  }
+
+  @Get('findAllZipCity')
+  async findAllZipCity(): Promise<ZipCityDTO[]> {
+    return await this.daoService.findAllZipCity();
   }
 }

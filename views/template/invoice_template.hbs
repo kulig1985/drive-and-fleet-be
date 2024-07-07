@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drive and fleet ürlap</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+
+  <link rel="stylesheet" type="text/css" href="styles.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<section id="invoice">
+  <div class="container my-md-5 py-5">
+
+    <div class=" d-md-flex justify-content-between align-items-center  mb-5  ">
+      <div class="mt-5 mt-md-0">
+        <h2 class="display-6 text-primary fw-bold">Drive and fleet soförszolgálati munkalap</h2>
+        <p class="m-0">Order ID: {{orderId}}</p>
+        <p class="m-0">Ride ID: {{rideId}}</p>
+      </div>
+      <div class="mt-5 mt-md-0">
+        <img src="images/logo_dark.png" alt="">
+      </div>
+
+
+    </div>
+
+    <div class="bg-light rounded-5 p-5">
+      <div class="d-md-flex justify-content-between">
+        <div>
+          <p class="text-primary fw-bold">Fuvar adatok</p>
+          <h5>Rendszám: <b>{{plateNr}}</b></h5>
+          <ul class="list-unstyled">
+            <li>Sofőr: <b>{{driverRealName}}</b></li>
+            <li>Felvétel helye: <b>{{startLocationZip}}, {{startLocationCity}} {{startLocationAddress}}</b></li>
+            <li>Leadás helye: <b>{{finishLocationZip}}, {{finishLocationCity}} {{finishLocationAddress}}</b></li>
+            <li>Teljesítve: <b>{{modDate}}</b></li>
+          </ul>
+        </div>
+        <div class="text-md-end mt-5 mt-md-0">
+          <p class="text-primary fw-bold">Partner adatok</p>
+          <h5>{{partnerName}}</h5>
+          <ul class="list-unstyled">
+            <li>{{partnerMail}}</li>
+            <li>{{partnerPhone}}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="d-md-flex justify-content-between mt-4">
+        <!--                    <div class="mt-5 mt-md-0">-->
+        <!--                        <p class="text-primary fw-bold">Payment Method</p>-->
+        <!--                        <h5>Payment Info</h5>-->
+        <!--                        <ul class="list-unstyled">-->
+        <!--                            <li><span class="fw-semibold">Account No: </span> 102 3345 56938</li>-->
+        <!--                            <li><span class="fw-semibold">Account Name: </span> William Peter</li>-->
+        <!--                            <li><span class="fw-semibold">Branch Name: </span> XYZ </li>-->
+
+        <!--                        </ul>-->
+        <!--                    </div>-->
+        <!--                    <div class="text-md-end mt-5 mt-md-0">-->
+        <!--                        <p class="text-primary fw-bold">Date</p>-->
+        <!--                        <h5>Invoice Date</h5>-->
+        <!--                        <ul class="list-unstyled">-->
+        <!--                            <li><span class="fw-semibold">Invoice Date:</span> 20 May, 2024</li>-->
+        <!--                            <li><span class="fw-semibold">Due Date:</span> 20 June, 2024</li>-->
+        <!--                        </ul>-->
+        <!--                    </div>-->
+      </div>
+    </div>
+    <hr>
+    <h5 class="fw-bold mb-4">Műszaki adatok</h5>
+    <table class="table border my-5">
+      <thead>
+      <tr class="bg-primary">
+        <th scope="col" class="text-white">Paraméter neve</th>
+        <th scope="col" class="text-white">Érték</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{#each rideSurveyResults}}
+        <tr>
+          <td>{{this.stype.typeName}}</td>
+          <td>{{this.survValue}}</td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+
+
+
+    <div style="margin-top: 400px">
+      <div class="row mt-4 mb-5">
+        <h5 class="fw-bold mb-4">Fényképek</h5>
+        {{#each files}}
+
+          <div class="col-md-3">
+            <a href="{{this.publicUrl}}"><img src="{{this.fileBase}}" alt="Image"
+                                              style="width: 250px; height: 250px;"></a>
+          </div>
+        </div>
+        {{/each}}
+
+    </div>
+
+    <div class="row mt-4 mb-5">
+      <h5 class="fw-bold mb-4">Aláírás</h5>
+      <img src="{{signFileBase}}" alt="Sign" style="width: 250px; height: 150px;">
+    </div>
+
+  </div>
+
+  <div id="footer-bottom">
+    <div class="container mt-5 border-top">
+      <div class="row mt-4">
+        <div class="col-md-6 copyright">
+          <p>© 2024 Drive and fleet. All Rights Reserved. Powered by Kebodev</p>
+        </div>
+        <!--                        <div class="col-md-6 text-md-end">-->
+        <!--                            <p>Free HTML Template by: <a href="https://templatesjungle.com/" target="_blank"-->
+        <!--                                    class="text-decoration-none text-black-50">-->
+        <!--                                    TemplatesJungle</a> </p>-->
+        <!--                        </div>-->
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+</body>
+
+</html>

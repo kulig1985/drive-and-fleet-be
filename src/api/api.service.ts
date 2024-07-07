@@ -12,8 +12,13 @@ import { HandleUploadResultDto } from './dto/handle-upload-result.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { RelRideDriver } from '../dao/entity/RelRideDriver';
-import { WorkOrderDTO } from '../dao/dto/workorder.dto';
 import { DriverModificationDto } from './dto/driver-modification.dto';
+import * as fs from 'fs';
+import * as path from 'path';
+import Handlebars from 'handlebars';
+import puppeteer from 'puppeteer';
+import { WorkOrderDTO } from '../dao/dto/workorder.dto';
+import { environments } from 'eslint-plugin-prettier';
 
 @Injectable()
 export class ApiService {
@@ -238,5 +243,72 @@ export class ApiService {
     this.logger.log('filePath: ', filePath);
 
     return filePath;
+  }
+
+  async generatePdfByRideId(rideId: number): Promise<Buffer> {
+    const templatePath = 'views/template/invoice_template.hbs';
+    const template = fs.readFileSync(templatePath, 'utf8');
+    const ride = await this.daoService.findRideById(rideId);
+
+    const picFiles = ride.files.filter((file) => file.fileType === 'pic');
+    const signFile = ride.files.find((file) => file.fileType === 'sign');
+
+    const data = {
+      orderId: ride.orderId,
+      rideId: ride.rideId,
+      plateNr: ride.order.plateNr,
+      driverRealName: ride.relRideDrivers[0].driver.driverRealName,
+      startLocationZip: ride.startLocationZip,
+      startLocationCity: ride.startLocationCity,
+      startLocationAddress: ride.startLocationAddress,
+      finishLocationZip: ride.finishLocationZip,
+      finishLocationCity: ride.finishLocationCity,
+      finishLocationAddress: ride.finishLocationAddress,
+      modDate: this.formatDateString(ride.modDate),
+      partnerName: ride.order.partner.partnerName,
+      partnerMail: ride.order.partner.partnerMail,
+      partnerPhone: ride.order.partner.partnerPhone,
+      rideSurveyResults: ride.rideSurveyResults,
+      files: picFiles,
+      signFileBase: signFile,
+    };
+
+    //Convert each image to a base64 string
+    const files = data.files.map((file) => {
+      const resolvedPath = path.resolve(file.filePath);
+      const imageBuffer = fs.readFileSync(resolvedPath);
+      return {
+        fileBase: `data:image/jpeg;base64,${imageBuffer.toString('base64')}`,
+        publicUrl: `${this.configHandlerService.get('publicUrl', 'url')}downloadPicture?fileId=${file.fileId}`,
+      };
+    });
+
+    const signFilePath = path.resolve(data.signFileBase.filePath);
+    const signBuffer = fs.readFileSync(signFilePath);
+    const signBase64 = signBuffer.toString('base64');
+    const signFileBase = `data:image/jpeg;base64,${signBase64}`;
+
+    const compileTemplate = Handlebars.compile(template);
+    const html = compileTemplate({ ...data, files, signFileBase });
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' }); // Ensure all resources are loaded
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+    await browser.close();
+
+    return pdfBuffer;
+  }
+
+  formatDateString(dateString: Date): string {
+    if (isNaN(dateString.getTime())) {
+      throw new Error('Invalid date string');
+    }
+    const year = dateString.getFullYear();
+    const month = (dateString.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    const day = dateString.getDate().toString().padStart(2, '0');
+    const hours = dateString.getHours().toString().padStart(2, '0');
+    const minutes = dateString.getMinutes().toString().padStart(2, '0');
+    return `${year}.${month}.${day} ${hours}:${minutes}`;
   }
 }

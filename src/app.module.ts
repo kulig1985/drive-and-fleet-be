@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { ApiModule } from './api/api.module';
+import { PublicController } from './public/public.controller';
+import { PublicService } from './public/public.service';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { ApiModule } from './api/api.module';
     }),
     ApiModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, PublicController],
+  providers: [AppService, PublicService],
 })
 export class AppModule {}

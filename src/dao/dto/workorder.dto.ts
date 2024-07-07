@@ -99,7 +99,7 @@ export class RideDTO {
   boolId: number;
   @AutoMap(() => [RelRideDriverDTO])
   relRideDrivers: RelRideDriverDTO[];
-  @AutoMap(() => [WorkOrderDTO])
+  @AutoMap(() => WorkOrderDTO)
   order: WorkOrderDTO;
   @AutoMap(() => [FileDTO])
   files: FileDTO[];
